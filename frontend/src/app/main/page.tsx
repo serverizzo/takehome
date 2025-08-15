@@ -13,7 +13,7 @@ import { backendUrl } from "./config";
 import { imageObject } from "./objects";
 
 export default function page() {
-  const [itemData, setItemData] = useState([]);
+  const [allItemData, setAllItemData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [numberOfImages, setNumberOfImages] = useState(0);
@@ -24,7 +24,8 @@ export default function page() {
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-        setItemData(data);
+        setAllItemData(data);
+        setFilteredData(data);
         setNumberOfImages(data.length);
       })
       .catch((error) => console.error("Error:", error));
@@ -35,7 +36,7 @@ export default function page() {
     // filter by input text, ignore case. Note: g isn't necessary since filter handels iteration.
     const re = new RegExp(searchText, "gi");
 
-    let localFilteredData = itemData.filter((item: imageObject) => {
+    let localFilteredData = allItemData.filter((item: imageObject) => {
       if (searchText === "") {
         return true;
       }
@@ -43,6 +44,7 @@ export default function page() {
     });
     setNumberOfImages(localFilteredData.length);
     console.log("localFilteredData", localFilteredData);
+    setFilteredData(localFilteredData)
   }, [searchText]);
 
   const uploadFile = (inputFile: File) => {
@@ -88,19 +90,7 @@ export default function page() {
             <ImageListItem key="Subheader" cols={2}>
               <ListSubheader component="div">{ numberOfImages } pictures retrieved </ListSubheader>
             </ImageListItem>
-            {itemData
-              .filter((item: imageObject) => {
-                // if the search text is empty, return true for all items (show all images)
-                if (searchText === "") {
-                  return true;
-                }
-                // filter by input text, ignore case. Note: g isn't necessary since filter handels iteration.
-                const re = new RegExp(searchText, "gi");
-
-                const toReturnList = item.title.match(re);
-                // console.log("toReturnList length", toReturnList?.length);
-                return toReturnList;
-              })
+            {filteredData
               .map((item: imageObject) => (
                 <ImageListItem key={item.img}>
                   <img
