@@ -30,6 +30,19 @@ export default function TitlebarImageList() {
     console.log("searchText", searchText);
   }, [searchText]);
 
+  const uploadFile = (inputFile: File) => {
+    console.log("uploading: ", inputFile);
+
+    const formData = new FormData();
+    formData.append("file", inputFile);
+
+    fetch(`${backendUrl}/upload`, {
+      method: "POST",
+      // body: JSON.stringify({ file: inputFile }),
+      body: formData
+    });
+  };
+
   return (
     <div className="main" style={styles.main}>
       <div className="container" style={styles.container}>
@@ -41,6 +54,18 @@ export default function TitlebarImageList() {
             variant="filled"
             onChange={(e) => setSearchText(e.target.value)}
           />
+          <input
+            type="file"
+            onChange={(e) => {
+              if (e.target.files && e.target.files.length > 0) {
+                const file: File = e.target.files?.[0];
+                console.log(file);
+                uploadFile(file);
+              } else {
+                console.error("issue uploading file");
+              }
+            }}
+          />
           <Button variant="contained">Upload</Button>
         </div>
         <div>
@@ -48,12 +73,14 @@ export default function TitlebarImageList() {
             <ImageListItem key="Subheader" cols={2}>
               <ListSubheader component="div">December</ListSubheader>
             </ImageListItem>
-            {itemData.filter((item) => {
-              if (searchText === "") return true;
-              // filter by input text, ignore case. Note: g isn't necessary since filter handels iteration.
-              const re = new RegExp(searchText, "gi")
-              return item.title.match(re)
-            }).map((item) => (
+            {itemData
+              .filter((item) => {
+                if (searchText === "") return true;
+                // filter by input text, ignore case. Note: g isn't necessary since filter handels iteration.
+                const re = new RegExp(searchText, "gi");
+                return item.title.match(re);
+              })
+              .map((item) => (
                 <ImageListItem key={item.img}>
                   <img
                     srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}

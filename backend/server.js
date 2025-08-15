@@ -2,8 +2,28 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3001; // Use environment variable for port
+const multer = require('multer');
+const path = require('path');
+
 
 app.use(cors())
+// Make uploads available to the frontend for img urls.
+app.use(express.static(path.join(__dirname, 'uploads')));
+
+// Configure multer for file storage
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // Specify the directory where uploaded files will be stored
+    // Make sure this 'uploads' directory exists
+    cb(null, path.join(__dirname, 'uploads'));
+  },
+  filename: function (req, file, cb) {
+    // Use the original filename to save the file
+    cb(null, file.originalname);
+  }
+});
+
+const upload = multer({ storage: storage });
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
@@ -85,5 +105,22 @@ app.get('/imagesAll', (req, res) =>{
     }
 ]   
 
+
+
+
     res.json(data)
 })
+
+app.post('/upload', upload.single('file'), (req, res) => {
+  console.log("Endpoint hit");
+  
+  if (!req.file) {
+    return res.status(400).send("No file uploaded.");
+  }
+
+  // The file information is now available on req.file
+  console.log("File received:", req.file);
+  console.log("File name:", req.file.originalname);
+
+  res.status(200).send("File uploaded successfully!");
+});
