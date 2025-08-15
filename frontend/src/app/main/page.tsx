@@ -10,11 +10,13 @@ import InfoIcon from "@mui/icons-material/Info";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { backendUrl } from "./config";
-import { imageObject } from "./objects"
+import { imageObject } from "./objects";
 
-export default function TitlebarImageList() {
+export default function page() {
   const [itemData, setItemData] = useState([]);
   const [searchText, setSearchText] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+  const [numberOfImages, setNumberOfImages] = useState(0);
 
   useEffect(() => {
     console.log("starting fetch");
@@ -23,12 +25,24 @@ export default function TitlebarImageList() {
       .then((data) => {
         console.log(data);
         setItemData(data);
+        setNumberOfImages(data.length);
       })
       .catch((error) => console.error("Error:", error));
   }, []);
 
   useEffect(() => {
     console.log("searchText", searchText);
+    // filter by input text, ignore case. Note: g isn't necessary since filter handels iteration.
+    const re = new RegExp(searchText, "gi");
+
+    let localFilteredData = itemData.filter((item: imageObject) => {
+      if (searchText === "") {
+        return true;
+      }
+      return item.title.match(re);
+    });
+    setNumberOfImages(localFilteredData.length);
+    console.log("localFilteredData", localFilteredData);
   }, [searchText]);
 
   const uploadFile = (inputFile: File) => {
@@ -40,7 +54,7 @@ export default function TitlebarImageList() {
     fetch(`${backendUrl}/upload`, {
       method: "POST",
       // body: JSON.stringify({ file: inputFile }),
-      body: formData
+      body: formData,
     });
   };
 
@@ -72,16 +86,22 @@ export default function TitlebarImageList() {
         <div>
           <ImageList sx={styles.imageList}>
             <ImageListItem key="Subheader" cols={2}>
-              <ListSubheader component="div">Pictures</ListSubheader>
+              <ListSubheader component="div">{ numberOfImages } pictures retrieved </ListSubheader>
             </ImageListItem>
             {itemData
-              .filter((item:imageObject) => {
-                if (searchText === "") return true;
+              .filter((item: imageObject) => {
+                // if the search text is empty, return true for all items (show all images)
+                if (searchText === "") {
+                  return true;
+                }
                 // filter by input text, ignore case. Note: g isn't necessary since filter handels iteration.
                 const re = new RegExp(searchText, "gi");
-                return item.title.match(re);
+
+                const toReturnList = item.title.match(re);
+                // console.log("toReturnList length", toReturnList?.length);
+                return toReturnList;
               })
-              .map((item:imageObject) => (
+              .map((item: imageObject) => (
                 <ImageListItem key={item.img}>
                   <img
                     srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}
