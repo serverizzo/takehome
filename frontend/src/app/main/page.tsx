@@ -44,7 +44,7 @@ export default function page() {
     });
     setNumberOfImages(localFilteredData.length);
     console.log("localFilteredData", localFilteredData);
-    setFilteredData(localFilteredData)
+    setFilteredData(localFilteredData);
   }, [searchText]);
 
   const uploadFile = (inputFile: File) => {
@@ -57,6 +57,22 @@ export default function page() {
       method: "POST",
       // body: JSON.stringify({ file: inputFile }),
       body: formData,
+    }).then((response) => {
+      // if response is 200, fetch all images to refresh ImageList
+      if (response.ok) {
+        fetch(`${backendUrl}/imagesAll`)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            setAllItemData(data);
+            setFilteredData(data);
+            setNumberOfImages(data.length);
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+      else {
+        console.error("Error uploading file");
+      }
     });
   };
 
@@ -88,31 +104,32 @@ export default function page() {
         <div>
           <ImageList sx={styles.imageList}>
             <ImageListItem key="Subheader" cols={2}>
-              <ListSubheader component="div">{ numberOfImages } pictures retrieved </ListSubheader>
+              <ListSubheader component="div">
+                {numberOfImages} pictures retrieved{" "}
+              </ListSubheader>
             </ImageListItem>
-            {filteredData
-              .map((item: imageObject) => (
-                <ImageListItem key={item.img}>
-                  <img
-                    srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                    src={`${item.img}?w=248&fit=crop&auto=format`}
-                    alt={item.title}
-                    loading="lazy"
-                  />
-                  <ImageListItemBar
-                    title={item.title}
-                    // subtitle={item.author}
-                    actionIcon={
-                      <IconButton
-                        sx={{ color: "rgba(255, 255, 255, 0.54)" }}
-                        aria-label={`info about ${item.title}`}
-                      >
-                        <InfoIcon />
-                      </IconButton>
-                    }
-                  />
-                </ImageListItem>
-              ))}
+            {filteredData.map((item: imageObject) => (
+              <ImageListItem key={item.img}>
+                <img
+                  srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                  src={`${item.img}?w=248&fit=crop&auto=format`}
+                  alt={item.title}
+                  loading="lazy"
+                />
+                <ImageListItemBar
+                  title={item.title}
+                  // subtitle={item.author}
+                  actionIcon={
+                    <IconButton
+                      sx={{ color: "rgba(255, 255, 255, 0.54)" }}
+                      aria-label={`info about ${item.title}`}
+                    >
+                      <InfoIcon />
+                    </IconButton>
+                  }
+                />
+              </ImageListItem>
+            ))}
           </ImageList>
         </div>
       </div>
