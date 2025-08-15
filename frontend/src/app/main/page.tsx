@@ -10,6 +10,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { backendUrl } from "./config";
+import { imageObject } from "./objects"
 
 export default function TitlebarImageList() {
   const [itemData, setItemData] = useState([]);
@@ -71,16 +72,16 @@ export default function TitlebarImageList() {
         <div>
           <ImageList sx={styles.imageList}>
             <ImageListItem key="Subheader" cols={2}>
-              <ListSubheader component="div">December</ListSubheader>
+              <ListSubheader component="div">Pictures</ListSubheader>
             </ImageListItem>
             {itemData
-              .filter((item) => {
+              .filter((item:imageObject) => {
                 if (searchText === "") return true;
                 // filter by input text, ignore case. Note: g isn't necessary since filter handels iteration.
                 const re = new RegExp(searchText, "gi");
                 return item.title.match(re);
               })
-              .map((item) => (
+              .map((item:imageObject) => (
                 <ImageListItem key={item.img}>
                   <img
                     srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}
@@ -90,7 +91,7 @@ export default function TitlebarImageList() {
                   />
                   <ImageListItemBar
                     title={item.title}
-                    subtitle={item.author}
+                    // subtitle={item.author}
                     actionIcon={
                       <IconButton
                         sx={{ color: "rgba(255, 255, 255, 0.54)" }}
