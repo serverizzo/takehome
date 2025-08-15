@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
 import ImageListItemBar from "@mui/material/ImageListItemBar";
@@ -11,12 +11,14 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { backendUrl } from "./config";
 import { imageObject } from "./objects";
+import { Input } from "@mui/material";
 
 export default function page() {
   const [allItemData, setAllItemData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [numberOfImages, setNumberOfImages] = useState(0);
+  const inputFileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     console.log("starting fetch");
@@ -69,8 +71,7 @@ export default function page() {
             setNumberOfImages(data.length);
           })
           .catch((error) => console.error("Error:", error));
-      }
-      else {
+      } else {
         console.error("Error uploading file");
       }
     });
@@ -87,8 +88,17 @@ export default function page() {
             variant="filled"
             onChange={(e) => setSearchText(e.target.value)}
           />
+          {/* <Input type="file" accept="image/*"/> */}
+
+
           <input
+            ref={inputFileRef}
             type="file"
+            accept="image/*"
+            // hide the input and simulate click via the mui button.
+            // This way, we can customize the button closer to the 
+            // design requirements
+            style={{ display: "none" }}
             onChange={(e) => {
               if (e.target.files && e.target.files.length > 0) {
                 const file: File = e.target.files?.[0];
@@ -99,7 +109,14 @@ export default function page() {
               }
             }}
           />
-          <Button variant="contained">Upload</Button>
+          <Button
+            onClick={() => {
+              inputFileRef.current?.click();
+            }}
+            variant="contained"
+          >
+            Upload
+          </Button>
         </div>
         <div>
           <ImageList sx={styles.imageList}>
