@@ -26,7 +26,7 @@ export default function page() {
     fetch(`${backendUrl}/imagesAll`)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
+        // console.log(data);
         setAllItemData(data);
         setFilteredData(data);
         setNumberOfImages(data.length);
@@ -35,12 +35,12 @@ export default function page() {
   };
 
   useEffect(() => {
-    console.log("starting fetch");
+    // console.log("starting fetch");
     fetchAndUpdateAllImageData();
   }, []);
 
   useEffect(() => {
-    console.log("searchText", searchText);
+    // console.log("searchText", searchText);
     // filter by input text, ignore case. Note: g isn't necessary since filter handels iteration.
     const re = new RegExp(searchText, "gi");
 
@@ -51,12 +51,12 @@ export default function page() {
       return item.title.match(re);
     });
     setNumberOfImages(localFilteredData.length);
-    console.log("localFilteredData", localFilteredData);
+    // console.log("localFilteredData", localFilteredData);
     setFilteredData(localFilteredData);
   }, [searchText]);
 
   const uploadFile = (inputFile: File) => {
-    console.log("uploading: ", inputFile);
+    // console.log("uploading: ", inputFile);
 
     const formData = new FormData();
     formData.append("file", inputFile);
@@ -76,7 +76,7 @@ export default function page() {
   };
 
   const deletePicture = (imgUrl: string) => {
-    console.log("begining delete :", imgUrl);
+    // console.log("begining delete :", imgUrl);
 
     fetch(`${backendUrl}/removeImg/${imgUrl}`, {
       method: "DELETE",

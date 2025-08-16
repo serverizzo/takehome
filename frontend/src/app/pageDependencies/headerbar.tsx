@@ -29,14 +29,14 @@ export default function Headerbar({ setSearchText, uploadFile, setOpenErrorSnack
         onChange={(e) => {
           if (e.target.files && e.target.files.length > 0) {
             const file: File = e.target.files?.[0];
-            console.log(file.type)
+            // console.log(file.type)
             if (!file.type.startsWith("image/")){
               // console.error("uploaded file not an image");
               setOpenErrorSnackbar(true)
               e.target.value = "";
               return;
             }
-            console.log(file);
+            // console.log(file);
             uploadFile(file);
             e.target.value = ""; // reset value (otherwise onChange won't trigger with the same upload)
           } else {
