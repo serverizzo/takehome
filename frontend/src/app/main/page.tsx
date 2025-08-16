@@ -21,8 +21,7 @@ export default function page() {
   const [numberOfImages, setNumberOfImages] = useState(0);
   const inputFileRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    console.log("starting fetch");
+  const fetchAndUpdateAllImageData = () => {
     fetch(`${backendUrl}/imagesAll`)
       .then((response) => response.json())
       .then((data) => {
@@ -32,6 +31,11 @@ export default function page() {
         setNumberOfImages(data.length);
       })
       .catch((error) => console.error("Error:", error));
+  }
+
+  useEffect(() => {
+    console.log("starting fetch");
+    fetchAndUpdateAllImageData();
   }, []);
 
   useEffect(() => {
@@ -63,15 +67,7 @@ export default function page() {
     }).then((response) => {
       // if response is 200, fetch all images to refresh ImageList
       if (response.ok) {
-        fetch(`${backendUrl}/imagesAll`)
-          .then((response) => response.json())
-          .then((data) => {
-            console.log(data);
-            setAllItemData(data);
-            setFilteredData(data);
-            setNumberOfImages(data.length);
-          })
-          .catch((error) => console.error("Error:", error));
+        fetchAndUpdateAllImageData();
       } else {
         console.error("Error uploading file");
       }
@@ -87,15 +83,7 @@ export default function page() {
     .then((response) => {
       // if response is 200, fetch all images to refresh ImageList
       if (response.ok) {
-        fetch(`${backendUrl}/imagesAll`)
-          .then((response) => response.json())
-          .then((data) => {
-            console.log(data);
-            setAllItemData(data);
-            setFilteredData(data);
-            setNumberOfImages(data.length);
-          })
-          .catch((error) => console.error("Error:", error));
+        fetchAndUpdateAllImageData();
       } else {
         console.error("Error uploading file");
       }
