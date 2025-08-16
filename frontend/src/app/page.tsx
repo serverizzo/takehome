@@ -9,14 +9,20 @@ import IconButton from "@mui/material/IconButton";
 import { backendUrl } from "./pageDependencies/config";
 import { imageObject } from "./pageDependencies/objects";
 import DeleteIcon from "@mui/icons-material/Delete";
+import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
 import Headerbar from "./pageDependencies/headerbar";
 import { appWidth } from "./pageDependencies/config";
+import Button from "@mui/material/Button";
+import CloseIcon from '@mui/icons-material/Close';
+
 
 export default function page() {
   const [allItemData, setAllItemData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [numberOfImages, setNumberOfImages] = useState(0);
+
+  const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
 
   const fetchAndUpdateAllImageData = () => {
     fetch(`${backendUrl}/imagesAll`)
@@ -54,6 +60,7 @@ export default function page() {
   const uploadFile = (inputFile: File) => {
     console.log("uploading: ", inputFile);
 
+
     const formData = new FormData();
     formData.append("file", inputFile);
 
@@ -86,15 +93,46 @@ export default function page() {
     });
   };
 
+  const handelSnackbarErrorClose = (
+    event: React.SyntheticEvent | Event,
+    reason?: SnackbarCloseReason
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenErrorSnackbar(false);
+  };
+
+  const handleClick = () => {
+    setOpenErrorSnackbar(true);
+  };
+
+  const action = (
+    <React.Fragment>
+      <Button color="secondary" size="small" onClick={handelSnackbarErrorClose}>
+        UNDO
+      </Button>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handelSnackbarErrorClose}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </React.Fragment>
+  );
+
   return (
     <div className="main" style={styles.main}>
       <div className="container" style={styles.container}>
-        <Headerbar setSearchText={setSearchText} uploadFile={uploadFile} />
+        <Headerbar setSearchText={setSearchText} uploadFile={uploadFile} setOpenErrorSnackbar={setOpenErrorSnackbar} />
         <div>
           <ImageList sx={styles.imageList}>
             <ImageListItem key="Subheader" cols={2}>
               <ListSubheader component="div">
-                {numberOfImages} pictures retrieved{" "}
+                {numberOfImages} pictures retrieved
               </ListSubheader>
             </ImageListItem>
             {filteredData.map((item: imageObject) => (
@@ -126,6 +164,14 @@ export default function page() {
           </ImageList>
         </div>
       </div>
+      <Button onClick={handleClick}>Open Snackbar</Button>
+      <Snackbar
+        open={openErrorSnackbar}
+        autoHideDuration={7000} // 7 seconds
+        onClose={handelSnackbarErrorClose}
+        message="File upload failed, uploaded file was not an image"
+        // action={action}
+      />
     </div>
   );
 }

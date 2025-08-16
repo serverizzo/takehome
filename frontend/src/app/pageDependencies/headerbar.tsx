@@ -5,7 +5,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { appWidth } from "./config"
 
-export default function Headerbar({ setSearchText, uploadFile } : { setSearchText: any; uploadFile: any }) {
+export default function Headerbar({ setSearchText, uploadFile, setOpenErrorSnackbar } : { setSearchText: any; uploadFile: any, setOpenErrorSnackbar: any  }) {
   const inputFileRef = useRef<HTMLInputElement>(null);
   return (
     <div className="headerBar" style={styles.headerBar}>
@@ -29,8 +29,16 @@ export default function Headerbar({ setSearchText, uploadFile } : { setSearchTex
         onChange={(e) => {
           if (e.target.files && e.target.files.length > 0) {
             const file: File = e.target.files?.[0];
+            console.log(file.type)
+            if (!file.type.startsWith("image/")){
+              // console.error("uploaded file not an image");
+              setOpenErrorSnackbar(true)
+              e.target.value = "";
+              return;
+            }
             console.log(file);
             uploadFile(file);
+            e.target.value = ""; // reset value (otherwise onChange won't trigger with the same upload)
           } else {
             console.error("issue uploading file");
           }
