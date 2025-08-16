@@ -6,20 +6,17 @@ import ImageListItem from "@mui/material/ImageListItem";
 import ImageListItemBar from "@mui/material/ImageListItemBar";
 import ListSubheader from "@mui/material/ListSubheader";
 import IconButton from "@mui/material/IconButton";
-import InfoIcon from "@mui/icons-material/Info";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
 import { backendUrl } from "./pageDependencies/config";
 import { imageObject } from "./pageDependencies/objects";
-import { Input } from "@mui/material";
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from "@mui/icons-material/Delete";
+import Headerbar from "./pageDependencies/headerbar";
+import { appWidth } from "./pageDependencies/config";
 
 export default function page() {
   const [allItemData, setAllItemData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [numberOfImages, setNumberOfImages] = useState(0);
-  const inputFileRef = useRef<HTMLInputElement>(null);
 
   const fetchAndUpdateAllImageData = () => {
     fetch(`${backendUrl}/imagesAll`)
@@ -31,7 +28,7 @@ export default function page() {
         setNumberOfImages(data.length);
       })
       .catch((error) => console.error("Error:", error));
-  }
+  };
 
   useEffect(() => {
     console.log("starting fetch");
@@ -79,8 +76,7 @@ export default function page() {
 
     fetch(`${backendUrl}/removeImg/${imgUrl}`, {
       method: "DELETE",
-    })
-    .then((response) => {
+    }).then((response) => {
       // if response is 200, fetch all images to refresh ImageList
       if (response.ok) {
         fetchAndUpdateAllImageData();
@@ -93,43 +89,7 @@ export default function page() {
   return (
     <div className="main" style={styles.main}>
       <div className="container" style={styles.container}>
-        <div className="headerBar" style={styles.headerBar}>
-          <TextField
-            id="outlined-basic"
-            label="Search images"
-            type="search"
-            variant="filled"
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-          {/* <Input type="file" accept="image/*"/> */}
-
-          <input
-            ref={inputFileRef}
-            type="file"
-            accept="image/*"
-            // hide the input and simulate click via the mui button.
-            // This way, we can customize the button closer to the
-            // design requirements
-            style={{ display: "none" }}
-            onChange={(e) => {
-              if (e.target.files && e.target.files.length > 0) {
-                const file: File = e.target.files?.[0];
-                console.log(file);
-                uploadFile(file);
-              } else {
-                console.error("issue uploading file");
-              }
-            }}
-          />
-          <Button
-            onClick={() => {
-              inputFileRef.current?.click();
-            }}
-            variant="contained"
-          >
-            Upload
-          </Button>
-        </div>
+        <Headerbar setSearchText={setSearchText} uploadFile={uploadFile} />
         <div>
           <ImageList sx={styles.imageList}>
             <ImageListItem key="Subheader" cols={2}>
@@ -169,8 +129,6 @@ export default function page() {
     </div>
   );
 }
-
-const appWidth = "70vw";
 
 const styles = {
   main: {
