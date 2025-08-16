@@ -1,4 +1,4 @@
-export interface imageObject {
+export interface ImageObject {
     img:string,
     title:string
 }

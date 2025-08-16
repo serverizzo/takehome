@@ -7,17 +7,17 @@ import ImageListItemBar from "@mui/material/ImageListItemBar";
 import ListSubheader from "@mui/material/ListSubheader";
 import IconButton from "@mui/material/IconButton";
 import { backendUrl } from "./pageDependencies/config";
-import { imageObject } from "./pageDependencies/objects";
+import { ImageObject } from "./pageDependencies/objects";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
 import Headerbar from "./pageDependencies/headerbar";
 import { appWidth } from "./pageDependencies/config";
 import Alert from "@mui/material/Alert";
 
-export default function page() {
-  const [allItemData, setAllItemData] = useState([]);
+export default function Page() {
+  const [allItemData, setAllItemData] = useState<ImageObject[]>([]);
   const [searchText, setSearchText] = useState("");
-  const [filteredData, setFilteredData] = useState([]);
+  const [filteredData, setFilteredData] = useState<ImageObject[]>([]);
   const [numberOfImages, setNumberOfImages] = useState(0);
 
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
@@ -44,7 +44,7 @@ export default function page() {
     // filter by input text, ignore case. Note: g isn't necessary since filter handels iteration.
     const re = new RegExp(searchText, "gi");
 
-    let localFilteredData = allItemData.filter((item: imageObject) => {
+    let localFilteredData:ImageObject[] = allItemData.filter((item: ImageObject) => {
       if (searchText === "") {
         return true;
       }
@@ -120,7 +120,7 @@ export default function page() {
                 {numberOfImages} pictures retrieved
               </ListSubheader>
             </ImageListItem>
-            {filteredData.map((item: imageObject) => (
+            {filteredData.map((item: ImageObject) => (
               <ImageListItem key={item.img}>
                 <img
                   srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}
