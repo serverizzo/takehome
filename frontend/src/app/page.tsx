@@ -12,9 +12,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
 import Headerbar from "./pageDependencies/headerbar";
 import { appWidth } from "./pageDependencies/config";
-import Button from "@mui/material/Button";
-import CloseIcon from '@mui/icons-material/Close';
-
+import Alert from "@mui/material/Alert";
 
 export default function page() {
   const [allItemData, setAllItemData] = useState([]);
@@ -60,7 +58,6 @@ export default function page() {
   const uploadFile = (inputFile: File) => {
     console.log("uploading: ", inputFile);
 
-
     const formData = new FormData();
     formData.append("file", inputFile);
 
@@ -104,30 +101,14 @@ export default function page() {
     setOpenErrorSnackbar(false);
   };
 
-  const handleClick = () => {
-    setOpenErrorSnackbar(true);
-  };
-
-  const action = (
-    <React.Fragment>
-      <Button color="secondary" size="small" onClick={handelSnackbarErrorClose}>
-        UNDO
-      </Button>
-      <IconButton
-        size="small"
-        aria-label="close"
-        color="inherit"
-        onClick={handelSnackbarErrorClose}
-      >
-        <CloseIcon fontSize="small" />
-      </IconButton>
-    </React.Fragment>
-  );
-
   return (
     <div className="main" style={styles.main}>
       <div className="container" style={styles.container}>
-        <Headerbar setSearchText={setSearchText} uploadFile={uploadFile} setOpenErrorSnackbar={setOpenErrorSnackbar} />
+        <Headerbar
+          setSearchText={setSearchText}
+          uploadFile={uploadFile}
+          setOpenErrorSnackbar={setOpenErrorSnackbar}
+        />
         <div>
           <ImageList sx={styles.imageList}>
             <ImageListItem key="Subheader" cols={2}>
@@ -164,14 +145,17 @@ export default function page() {
           </ImageList>
         </div>
       </div>
-      <Button onClick={handleClick}>Open Snackbar</Button>
       <Snackbar
         open={openErrorSnackbar}
         autoHideDuration={7000} // 7 seconds
         onClose={handelSnackbarErrorClose}
-        message="File upload failed, uploaded file was not an image"
+        // message="File upload failed, uploaded file was not an image"
         // action={action}
-      />
+      >
+        <Alert severity="warning">
+          File upload failed, uploaded file was not an image
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
