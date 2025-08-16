@@ -12,6 +12,7 @@ import Button from "@mui/material/Button";
 import { backendUrl } from "./config";
 import { imageObject } from "./objects";
 import { Input } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function page() {
   const [allItemData, setAllItemData] = useState([]);
@@ -77,6 +78,30 @@ export default function page() {
     });
   };
 
+  const deletePicture = (imgUrl: string) => {
+    console.log("begining delete :", imgUrl);
+
+    fetch(`${backendUrl}/removeImg/${imgUrl}`, {
+      method: "DELETE",
+    })
+    .then((response) => {
+      // if response is 200, fetch all images to refresh ImageList
+      if (response.ok) {
+        fetch(`${backendUrl}/imagesAll`)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            setAllItemData(data);
+            setFilteredData(data);
+            setNumberOfImages(data.length);
+          })
+          .catch((error) => console.error("Error:", error));
+      } else {
+        console.error("Error uploading file");
+      }
+    });
+  };
+
   return (
     <div className="main" style={styles.main}>
       <div className="container" style={styles.container}>
@@ -90,13 +115,12 @@ export default function page() {
           />
           {/* <Input type="file" accept="image/*"/> */}
 
-
           <input
             ref={inputFileRef}
             type="file"
             accept="image/*"
             // hide the input and simulate click via the mui button.
-            // This way, we can customize the button closer to the 
+            // This way, we can customize the button closer to the
             // design requirements
             style={{ display: "none" }}
             onChange={(e) => {
@@ -140,8 +164,12 @@ export default function page() {
                     <IconButton
                       sx={{ color: "rgba(255, 255, 255, 0.54)" }}
                       aria-label={`info about ${item.title}`}
+                      onClick={() => {
+                        // console.log(`${item.title} has been clicked`);
+                        deletePicture(item.title);
+                      }}
                     >
-                      <InfoIcon />
+                      <DeleteIcon />
                     </IconButton>
                   }
                 />

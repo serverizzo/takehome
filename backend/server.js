@@ -144,3 +144,20 @@ app.post('/upload', upload.single('file'), (req, res) => {
 
   res.status(200).send("File uploaded successfully!");
 });
+
+app.delete('/removeImg/:imgUrl', (req, res) => {
+
+  const {imgUrl} = req.params;
+  console.log("Delete request received for:", imgUrl);
+
+  const filePath = path.join(__dirname, 'uploads', imgUrl);
+
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      console.error("Error deleting file:", err);
+      return res.status(500).send("Error deleting file.");
+    }
+    console.log("File deleted successfully:", imgUrl);
+    res.status(200).send("File deleted successfully.");
+  });
+})
