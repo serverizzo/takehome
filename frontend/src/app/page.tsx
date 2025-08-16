@@ -72,6 +72,8 @@ export default function page() {
       } else {
         console.error("Error uploading file");
       }
+    }).catch((error) => {
+      console.log("error uploading file", error)
     });
   };
 
@@ -87,6 +89,8 @@ export default function page() {
       } else {
         console.error("Error uploading file");
       }
+    }).catch((error) => {
+      console.log("error deleting file", error)
     });
   };
 
